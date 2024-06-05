@@ -16,6 +16,7 @@ func main() {
 	stack := middleware.CreateStack(
 		middleware.Logging,
 		middleware.AllowCors,
+		// middleware.IsAuthenticated,
 	)
 
 	server := http.Server{

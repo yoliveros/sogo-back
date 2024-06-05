@@ -11,7 +11,7 @@ type wrappedWrite struct {
 	statusCode int
 }
 
-func (w *wrappedWrite) WriteHeader(statusCode int) {
+func (w *wrappedWrite) WritrHeader(statusCode int) {
 	w.ResponseWriter.WriteHeader(statusCode)
 	w.statusCode = statusCode
 }

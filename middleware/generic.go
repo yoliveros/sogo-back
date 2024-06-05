@@ -1,13 +1,12 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 )
 
 func AllowCors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Enabling CORS")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		next.ServeHTTP(w, r)
 	})
 }
