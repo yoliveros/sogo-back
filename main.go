@@ -13,13 +13,13 @@ import (
 func main() {
 	router := http.NewServeMux()
 
+	loadRouters(router)
+
 	stack := middleware.CreateStack(
 		middleware.Logging,
 		middleware.AllowCors,
 		// middleware.IsAuthenticated,
 	)
-
-	loadRouters(router)
 
 	server := http.Server{
 		Addr:    ":8080",

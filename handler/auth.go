@@ -19,11 +19,17 @@ type User struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+type Login struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	results, err := db.Query("CALL sp_get_users()")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer results.Close()
 
 	users := []User{}
 
@@ -49,30 +55,46 @@ func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-	result, err := db.Query("CALL sp_get_user_by_username(?)", username)
+	login := Login{}
+
+	json.NewDecoder(r.Body).Decode(&login)
+	defer r.Body.Close()
+
+	if login.Username == "" || login.Password == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missing username or password"))
+		return
+	}
+
+	result, err := db.Query("CALL sp_get_user_by_username(?)", login.Username)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer result.Close()
 
-	if !result.Next() {
+	user := User{}
+
+	if result.Next() {
+		result.Scan(&user.Username, &user.Password)
+	}
+
+	if user.Username == "" {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("User not found"))
 		return
 	}
 
-	user := User{}
+	log.Println(user)
+	log.Println(login)
 
-	result.Scan(&user.Username, user.Password)
-
-	if user.Password != password {
+	if user.Username != login.Username || user.Password != login.Password {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Wrong password"))
+		w.Write([]byte("Invalid credentials"))
 		return
 	}
 
-	w.Write([]byte("You are logged in!"))
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Login successful"))
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {

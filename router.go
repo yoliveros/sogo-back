@@ -10,7 +10,7 @@ func loadRouters(roter *http.ServeMux) {
 	auth := &handler.Handler{}
 	handler.InitDB()
 
-	roter.HandleFunc("GET /users", auth.GetUsers)
+	roter.HandleFunc("GET /auth/users", auth.GetUsers)
 	roter.HandleFunc("POST /auth/login", auth.Login)
 	roter.HandleFunc("POST /auth/register", auth.Register)
 }
