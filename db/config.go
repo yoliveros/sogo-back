@@ -1,4 +1,4 @@
-package handler
+package db
 
 import (
 	"database/sql"
@@ -9,4 +9,8 @@ var db *sql.DB
 
 func InitDB() {
 	db, _ = sql.Open("mysql", "root:root@tcp(localhost:3306)/sogo")
+}
+
+func DeinitDB() {
+	db.Close()
 }

@@ -5,20 +5,21 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/yoliveros/sogo-back/middleware"
-
-	_ "github.com/go-sql-driver/mysql"
+	"sogo-back/db"
+	"sogo-back/middleware"
 )
 
 func main() {
 	router := http.NewServeMux()
+
+	db.InitDB()
+	defer db.DeinitDB()
 
 	loadRouters(router)
 
 	stack := middleware.CreateStack(
 		middleware.Logging,
 		middleware.AllowCors,
-		//middleware.IsAuthenticated,
 	)
 
 	server := http.Server{
