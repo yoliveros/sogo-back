@@ -5,12 +5,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 func InitDB() {
-	db, _ = sql.Open("mysql", "root:root@tcp(localhost:3306)/sogo")
+	DB, _ = sql.Open("mysql", "root:root@tcp(localhost:3306)/sogo")
 }
 
 func DeinitDB() {
-	db.Close()
+	DB.Close()
 }
